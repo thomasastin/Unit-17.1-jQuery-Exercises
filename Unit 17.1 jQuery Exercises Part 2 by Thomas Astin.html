@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movies App</title>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
+  <style>
+    .container {
+      margin-top: 20px;
+    }
+    .movie-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .remove-btn {
+       margin-left: 10px
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="text-center">Movies App</h1>
+  <form id="movieForm">
+    <div class="form-group">
+      <label for="title">Movie Title</label>
+      <input type="text" class="form-control" id="title" placeholder="Enter movie title" min ="2" max="10"required>
+    </div>
+    <div class="form-group">
+      <label for="rating">Rating</label>
+      <input type="number" class="form-control" id="rating" placeholder="Enter rating" min="0" max="10" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Movie</button>
+  </form>
+  <div class ="mt-4"><
+  <button id="sortTitleAsc" class="btn btn-secondary">Sort by Title (A-Z)</button>
+  <button id="sortTitleDesc" class="btn btn-secondary">Sort by Title (Z-A)</button>
+  <button id="sortRatingAsc" class="btn btn-secondary">Sort by Rating (Low-High)</button>
+  <button id="sortRatingDesc" class="btn btn-secondary">Sort by Rating (High-Low)</button>
+  </div>
+  <div id="movieList" class="mt-4">
+    <!-- Movies will be listed here -->
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#movieForm').on('submit', function(event) {
+      event.preventDefault();
+      
+      // Get the values from the form inputs
+      var title = $('#title').val();
+      var rating = $('#rating').val();
+
+      if (title.length < 2) {
+        alert("Title must be at least 2 characters long.");
+        return;
+      }
+      
+      // Create a new movie entry
+      var movieEntry = '<div class="movie-entry"><strong>' + title + '</strong> - Rating: ' + rating + '<button class="btn btn-danger btn-sm remove-btn">Remove</button></div>');
+      
+      // Append the new movie entry to the movie list
+      $('#movieList').append(movieEntry);
+      
+      // Clear the form inputs
+      $('#title').val('');
+      $('#rating').val('');
+    });
+
+    $('movieList').on('click', '.remove-btn', function() {
+        $(this).parent().remove();
+    })
+
+    function sortMovies(criteria, ascending) {
+        var movies = $('.movie-entry').get();
+        movies.sort(function(a, b) {
+            var aValue = $(a).find('strong').text();
+            var bValue = $(b).find('strong').text();
+            if (criteria === 'rating') {
+                aValue = parseFloat($(a).text().split('Rating: ')[1]);
+                bValue = parseFloat($(b).text().split('Rating: ')[1]);
+            }
+        if (ascending) {
+            return aValue > bValue ? 1 : -1;
+        } else {
+            return aValue < bValue ? 1 : -1;
+        }
+      });
+      $.each(movies, function(index, movie) {
+        $('movieList').append(movie);
+      });
+    }
+
+    $('#sortTitleAsc').on('click', function() {
+        sortMovies('title', true);
+    });
+
+    $('#sortTitleDesc').on('click', function() {
+        sortMovies('title', false);
+    });
+
+    $('sortRatingAsc').on('click', function() {
+        sortMovies('rating', true);
+    });
+
+    $('#sortRatingDesc').on('click', function() {
+        sortMovies('rating', false)
+    });
+  });
+</script>
+</body>
+</html>
